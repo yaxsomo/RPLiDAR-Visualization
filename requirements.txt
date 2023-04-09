@@ -1,0 +1,2 @@
+adafruit_rplidar==0.0.1
+pygame==2.3.0
