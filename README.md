@@ -43,8 +43,8 @@ Cette commande lancera le programme en utilisant les ports série '/dev/ttyUSB0'
 
 Les arguments actuellement supportés sont les suivants : <br>
 
-- '--port' : L'argument 'port' permet de specifier le port auquel le RpLiDAR est branché <br>
-- '--size' : L'argument 'size' permet de specifier la taille de la fênetre d'affichage (format WxH) <br>
+- --port : L'argument 'port' permet de specifier le port auquel le RpLiDAR est branché <br>
+- --size : L'argument 'size' permet de specifier la taille de la fênetre d'affichage (format WxH) <br>
 
 Vous pouvez arrêter le programme à tout moment en appuyant sur la touche Ctrl-C dans le terminal.
 
