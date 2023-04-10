@@ -37,11 +37,6 @@ lidar = RPLidar(None, args.port_name, baudrate=256000, timeout=3)
 # used to scale data to fit on the screen
 max_distance = 0
 
-
-def stop_lidar(lidar):
-    lidar.stop()
-    lidar.disconnect()
-
 #pylint: disable=redefined-outer-name,global-statement
 def process_data(data):
     global max_distance
@@ -70,7 +65,6 @@ try:
 except KeyboardInterrupt:
     print('Stoping.')
 finally:
-    print("Yax stopped this")
     lidar.stop()
     print("Lidar stopped")
     lidar.disconnect()
