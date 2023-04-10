@@ -21,20 +21,28 @@ from math import cos, sin, pi, floor
 import pygame
 from adafruit_rplidar import RPLidar
 import multiprocessing as mp
+import argparse
+
+# Set up argparse
+parser = argparse.ArgumentParser(description='LiDAR Point Map Visualization for ARGO Drone')
+parser.add_argument('--port', dest='port_name', default='/dev/ttyUSB0',
+                    help='Serial port where the LIDAR is connected to (Linux : /dev/ttyUSB0 | MAC : /dev/tty.usbserial-1120)')
+parser.add_argument('--size', dest='display_size', default='1720x1080', type=str,
+                    help='Size of the display in pixels ("Width"x"Height")')
+args = parser.parse_args()
 
 # Set up pygame and the display
 os.putenv('SDL_FBDEV', '/dev/fb1')
 pygame.init()
-WIDTH = 1720
-HEIGHT = 1080
-lcd = pygame.display.set_mode((WIDTH,HEIGHT))
+WIDTH, HEIGHT = map(int, args.display_size.split('x'))
+lcd = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.mouse.set_visible(False)
 lcd.fill((0,0,0))
 pygame.display.update()
 
 # Setup the RPLidar
-PORT_NAME = '/dev/ttyUSB0'
-lidar = RPLidar(None, PORT_NAME, baudrate=256000, timeout=3)
+lidar = RPLidar(None, args.port_name, baudrate=256000, timeout=3)
+
 
 # used to scale data to fit on the screen
 max_distance = 0
