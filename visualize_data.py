@@ -1,16 +1,7 @@
-# SPDX-FileCopyrightText: 2019 Dave Astels for Adafruit Industries
-#
-# SPDX-License-Identifier: MIT
-
 """
-Consume LIDAR measurement file and create an image for display.
+ARGO LIDAR Point Map Data Visalization
 
-Adafruit invests time and resources providing this open source code.
-Please support Adafruit and open source hardware by purchasing
-products from Adafruit!
-
-Written by Dave Astels for Adafruit Industries
-Copyright (c) 2019 Adafruit Industries
+Written by Yassine DEHHANI for ARGO : The Atonomous Drone
 Licensed under the MIT license.
 
 All text above must be included in any redistribution.
@@ -20,7 +11,6 @@ import os
 from math import cos, sin, pi, floor
 import pygame
 from adafruit_rplidar import RPLidar
-import multiprocessing as mp
 import argparse
 
 # Set up argparse
