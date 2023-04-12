@@ -63,11 +63,14 @@ try:
         process_data(scan_data)
 
 except KeyboardInterrupt:
-    print('Stoping.')
-finally:
+    print('Stoping...')
     lidar.stop()
+    print("Scanning process stopped")
     lidar.stop_motor()
-    print("Lidar stopped")
+    print("Motor stopped")
     lidar.disconnect()
+    print("Lidar disconnected")
+
+    
 
 
