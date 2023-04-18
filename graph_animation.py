@@ -47,7 +47,7 @@ ax = plt.subplot(111, projection='polar')
 line = ax.scatter([0, 0], [0, 0], s=5, c=[IMIN, IMAX],cmap=plt.cm.Greys_r, lw=0)
 
 def on_close(event):
-    print("Closing the lidar...")
+    print("Closing the lidar..")
     try:
         lidar.stop_motor()
         lidar.disconnect()
