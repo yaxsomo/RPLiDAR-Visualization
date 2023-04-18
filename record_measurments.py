@@ -8,13 +8,13 @@
 │ ██║  ██║██║  ██║╚██████╔╝╚█████╔╝  ███████╗██║██████╔╝██║  ██║██║  ██║ │
 │ ╚═╝  ╚═╝╚═╝  ╚═╝ ╚═════╝  ╚════╝   ╚══════╝╚═╝╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝ │
 ├────────────────────────────────────┬───────────────────────────────────┤
-│ ARGO Point Map Data Visualization  │  YASSINE DEHHANI & EMILE BAILEY   │
+│  ARGO LiDAR Measurements Recorder  │  YASSINE DEHHANI & EMILE BAILEY   │
 │           17/03/2023               │      www.github.com/yaxsomo       │
 └────────────────────────────────────┴───────────────────────────────────┘
 
-ARGO LIDAR Point Map Data Visalization
+ARGO LiDAR Measurements Recorder
 
-Usage example: python3 visualize_data.py --port [port_name] --size [display_size]
+Usage example: python3 record_measurments.py --port [port_name] --f [file_name.txt]
 
 Written by Yassine DEHHANI for ARGO : The Atonomous Drone
 Licensed under the MIT license.
@@ -22,73 +22,41 @@ Licensed under the MIT license.
 All text above must be included in any redistribution.
 """
 
-#Libraries import
-import os
-from math import cos, sin, pi, floor
-import pygame
+
 from adafruit_rplidar import RPLidar
 import argparse
 
+
+
 # Set up argparse
-parser = argparse.ArgumentParser(description='LiDAR Point Map Visualization for ARGO Drone')
+parser = argparse.ArgumentParser(description='LiDAR Measurements Recorder for ARGO Drone')
 parser.add_argument('--port', dest='port_name', default='/dev/ttyUSB0',
                     help='Serial port where the LIDAR is connected to (Linux : /dev/ttyUSB0 | MAC : /dev/tty.usbserial-1120)')
-parser.add_argument('--size', dest='display_size', default='1720x1080', type=str,
-                    help='Size of the display in pixels ("Width"x"Height")')
+parser.add_argument('--f', dest='file_name', default='measurements.txt', type=str,
+                    help='Specify the file name')
 args = parser.parse_args()
 
-# Set up pygame and the display
-os.putenv('SDL_FBDEV', '/dev/fb1')
-pygame.init()
-WIDTH, HEIGHT = map(int, args.display_size.split('x')) 
-lcd = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.mouse.set_visible(True)
-lcd.fill((0,0,0))
-pygame.display.update()
 
-# Setup the RPLidar
-lidar = RPLidar(None, args.port_name, baudrate=256000, timeout=3)
+PORT_NAME = args.port_name
 
 
-# used to scale data to fit on the screen
-max_distance = 0
+def run(path):
+    '''Main function'''
+    lidar = RPLidar(None, PORT_NAME, baudrate=256000, timeout=3)
+    outfile = open(path, 'w')
+    try:
+        print('Recording measurments... Press Crl+C to stop.')
+        for measurment in lidar.iter_measurments():
+            line = '\t'.join(str(v) for v in measurment)
+            outfile.write(line + '\n')
+    except KeyboardInterrupt:
+        print('Stoping...')
+        lidar.stop()
+        print("Scanning process stopped")
+        lidar.stop_motor()
+        print("Motor stopped")
+        lidar.disconnect()
+        print("Lidar disconnected")
 
-#pylint: disable=redefined-outer-name,global-statement
-def process_data(data):
-    global max_distance
-    lcd.fill((0,0,0))
-    for angle in range(360):
-        distance = data[angle]
-        if distance > 0:                  # ignore initially ungathered data points
-            max_distance = max([min([5000, distance]), max_distance])
-            radians = angle * pi / 180.0
-            x = distance * cos(radians)
-            y = distance * sin(radians)
-            point = (int((x / max_distance * (WIDTH/2)) + (WIDTH/2)), int((y / max_distance * (HEIGHT/2)) + (HEIGHT/2)))
-            lcd.set_at(point, pygame.Color(255, 255, 255))
-    pygame.display.update()
-
-
-scan_data = [0]*360
-
-try:
-    print(lidar.info)
-    for scan in lidar.iter_scans():
-        for (_, angle, distance) in scan:
-            scan_data[min([359, floor(angle)])] = distance
-        process_data(scan_data)
-
-except KeyboardInterrupt:
-    print('Stoping...')
-    pygame.event.clear()
-    pygame.display.quit()
-    lidar.stop()
-    print("Scanning process stopped")
-    lidar.stop_motor()
-    print("Motor stopped")
-    lidar.disconnect()
-    print("Lidar disconnected")
-
-    
-
-
+if __name__ == '__main__':
+    run(args.file_name)
